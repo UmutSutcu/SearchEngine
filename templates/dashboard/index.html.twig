@@ -43,7 +43,14 @@
             <tbody>
             {% for c in items %}
                 <tr>
-                    <td>{{ c.title }}</td>
+                    <td>
+                        {{ c.title }}
+                        <div class="tags">
+                            {% for tag in c.tags %}
+                                <span class="tag">{{ tag.name }}</span>
+                            {% endfor %}
+                        </div>
+                    </td>
                     <td>{{ c.type.value }}</td>
                     <td>{{ c.finalScore|number_format(2) }}</td>
                     <td>{{ c.publishedAt|date('d.m.Y') }}</td>

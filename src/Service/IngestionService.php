@@ -2,6 +2,7 @@
 namespace App\Service;
 
 use App\Entity\ContentItem;
+use App\Entity\Tag;
 use App\Enum\ContentType;
 use App\Provider\ProviderClientInterface;
 use App\Service\ScoreCalculator;
@@ -27,19 +28,24 @@ final class IngestionService
         $count = 0;
         foreach ($this->providers as $p) {
             if ($p->name() === 'json') {
-                // ESKİ: $this->jsonLimiter->create('json-provider');
                 $limiter = $this->jsonLimiter->create('json-provider');
             } else {
-                // ESKİ: $this->xmlLimiter->create('xml-provider');
                 $limiter = $this->xmlLimiter->create('xml-provider');
             }
 
             if (!$limiter->consume(1)->isAccepted()) {
                 continue;
             }
+            
+            // Pre-load existing tags to avoid duplicates
+            $existingTags = [];
+            $tagRepo = $this->em->getRepository(Tag::class);
+            foreach ($tagRepo->findAll() as $tag) {
+                $existingTags[$tag->getName()] = $tag;
+            }
 
             foreach ($p->fetch() as $n) {
-                $item = $this->upsert($p->name(), $n);
+                $item = $this->upsert($p->name(), $n, $existingTags);
                 $this->sc->compute($item);
                 $this->em->persist($item);
                 $count++;
@@ -49,7 +55,7 @@ final class IngestionService
         return $count;
     }
 
-    private function upsert(string $provider, array $n): ContentItem
+    private function upsert(string $provider, array $n, array &$existingTags): ContentItem
     {
         $repo = $this->em->getRepository(ContentItem::class);
         $item = $repo->findOneBy(['provider'=>$provider, 'externalId'=>$n['external_id']]) ?? new ContentItem();
@@ -60,7 +66,19 @@ final class IngestionService
         $item->setExternalId($n['external_id']);
         $item->setTitle($n['title']);
         $item->setType($n['type']==='video' ? ContentType::VIDEO : ContentType::TEXT);
-        $item->setTags($n['tags'] ?? []);
+        
+        // Clear existing tags and add new ones
+        $item->clearTags();
+        foreach ($n['tags'] ?? [] as $tagName) {
+            if (!isset($existingTags[$tagName])) {
+                $tag = new Tag();
+                $tag->setName($tagName);
+                $this->em->persist($tag);
+                $existingTags[$tagName] = $tag;
+            }
+            $item->addTag($existingTags[$tagName]);
+        }
+        
         $item->setViews($n['views'] ?? null);
         $item->setLikes($n['likes'] ?? null);
         $item->setReadingTime($n['reading_time'] ?? null);

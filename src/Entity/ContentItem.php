@@ -2,6 +2,8 @@
 namespace App\Entity;
 
 use App\Enum\ContentType;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity]
@@ -26,8 +28,9 @@ class ContentItem
     #[ORM\Column(length:255)]
     private string $title;
 
-    #[ORM\Column(type:'json', nullable:true)]
-    private ?array $tags = null;
+    #[ORM\ManyToMany(targetEntity: Tag::class, inversedBy: 'contentItems')]
+    #[ORM\JoinTable(name: 'content_item_tags')]
+    private Collection $tags;
 
     #[ORM\Column(type:'json', nullable:true)]
     private ?array $raw = null;
@@ -67,8 +70,38 @@ class ContentItem
     public function setTitle(string $t): self { $this->title=$t; return $this; }
     public function getTitle(): string { return $this->title; }
 
-    public function setTags(?array $t): self { $this->tags=$t; return $this; }
-    public function getTags(): ?array { return $this->tags; }
+    public function __construct()
+    {
+        $this->tags = new ArrayCollection();
+    }
+
+    /**
+     * @return Collection<int, Tag>
+     */
+    public function getTags(): Collection
+    {
+        return $this->tags;
+    }
+
+    public function addTag(Tag $tag): self
+    {
+        if (!$this->tags->contains($tag)) {
+            $this->tags[] = $tag;
+        }
+        return $this;
+    }
+
+    public function removeTag(Tag $tag): self
+    {
+        $this->tags->removeElement($tag);
+        return $this;
+    }
+
+    public function clearTags(): self
+    {
+        $this->tags->clear();
+        return $this;
+    }
 
     public function setRaw(?array $r): self { $this->raw=$r; return $this; }
     public function getRaw(): ?array { return $this->raw; }

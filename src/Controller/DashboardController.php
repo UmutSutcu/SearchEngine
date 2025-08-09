@@ -23,9 +23,10 @@ final class DashboardController extends AbstractController
         $qb = $em->getRepository(ContentItem::class)->createQueryBuilder('c');
 
         if ($query) {
-            $qb->andWhere('LOWER(c.title) LIKE :query OR JSON_CONTAINS(LOWER(c.tags), :tag) = 1')
+            $qb->leftJoin('c.tags', 't')
+               ->andWhere('LOWER(c.title) LIKE :query OR LOWER(t.name) = :tag')
                ->setParameter('query', '%' . strtolower($query) . '%')
-               ->setParameter('tag', json_encode(strtolower($query)));
+               ->setParameter('tag', strtolower($query));
         }
 
         if ($type && in_array($type, ['video', 'text'])) {
@@ -38,11 +39,11 @@ final class DashboardController extends AbstractController
             $qb->orderBy('c.finalScore * 
                 CASE 
                     WHEN LOWER(c.title) LIKE :titleQuery THEN 2 
-                    WHEN JSON_CONTAINS(LOWER(c.tags), :tagQuery) = 1 THEN 1.5 
+                    WHEN LOWER(t.name) = :tagQuery THEN 1.5 
                     ELSE 1 
                 END', 'DESC')
                ->setParameter('titleQuery', '%' . strtolower($query) . '%')
-               ->setParameter('tagQuery', json_encode(strtolower($query)));
+               ->setParameter('tagQuery', strtolower($query));
         } else {
             $qb->orderBy('c.finalScore', 'DESC');
         }
