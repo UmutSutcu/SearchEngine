@@ -1,0 +1,27 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Dashboard - WEG Search{% endblock %}
+
+{% block body %}
+    <h1>İçerikler (En İyi 50)</h1>
+    <table>
+        <thead>
+            <tr>
+                <th>Başlık</th>
+                <th>Tür</th>
+                <th>Skor</th>
+                <th>Yayın Tarihi</th>
+            </tr>
+        </thead>
+        <tbody>
+        {% for c in items %}
+            <tr>
+                <td>{{ c.title }}</td>
+                <td>{{ c.type.value }}</td>
+                <td>{{ c.finalScore|number_format(2) }}</td>
+                <td>{{ c.publishedAt|date('d.m.Y') }}</td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+{% endblock %}

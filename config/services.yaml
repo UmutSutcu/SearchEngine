@@ -1,0 +1,48 @@
+services:
+  _defaults: { autowire: true, autoconfigure: true }
+
+  App\:
+    resource: '../src/'
+    exclude:
+      - '../src/DependencyInjection/'
+      - '../src/Entity/'
+      - '../src/Kernel.php'
+
+  App\Provider\JsonProviderClient:
+    arguments: { $url: '%env(PROVIDER_JSON_URL)%' }
+    tags: ['app.provider']
+
+  App\Provider\XmlProviderClient:
+    arguments: { $url: '%env(PROVIDER_XML_URL)%' }
+    tags: ['app.provider']
+
+  app.rate_limiter.storage:
+    class: Symfony\Component\RateLimiter\Storage\CacheStorage
+    arguments:
+      $pool: '@cache.rate_limiter'
+
+  app.rate_limiter.provider_json:
+    class: Symfony\Component\RateLimiter\RateLimiterFactory
+    arguments:
+      $storage: '@app.rate_limiter.storage'
+      $config:
+        policy: 'token_bucket'
+        limit: 60
+        rate: { interval: '1 minute', amount: 60 }
+        id: 'json'
+
+  app.rate_limiter.provider_xml:
+    class: Symfony\Component\RateLimiter\RateLimiterFactory
+    arguments:
+      $storage: '@app.rate_limiter.storage'
+      $config:
+        policy: 'token_bucket'
+        limit: 60
+        rate: { interval: '1 minute', amount: 60 }
+        id: 'xml'
+
+  App\Service\IngestionService:
+    arguments:
+      $providers: !tagged_iterator app.provider
+      $jsonLimiter: '@app.rate_limiter.provider_json'
+      $xmlLimiter: '@app.rate_limiter.provider_xml'

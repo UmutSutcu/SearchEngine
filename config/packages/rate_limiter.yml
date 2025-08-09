@@ -1,0 +1,12 @@
+framework:
+  rate_limiter:
+    provider_json:
+      policy: 'token_bucket'
+      limit: 60
+      rate: { interval: '1 minute', amount: 60 }
+      id: 'json'
+    provider_xml:
+      policy: 'token_bucket'
+      limit: 60
+      rate: { interval: '1 minute', amount: 60 }
+      id: 'xml'

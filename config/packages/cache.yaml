@@ -1,0 +1,12 @@
+framework:
+    cache:
+        # Unique name of your app: used to compute stable namespaces for cache keys.
+        prefix_seed: weg_search
+
+        # The "app" cache stores to the filesystem by default.
+        app: cache.adapter.filesystem
+
+        pools:
+            cache.rate_limiter:
+                adapter: cache.adapter.filesystem
+                tags: false
