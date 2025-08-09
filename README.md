@@ -7,7 +7,6 @@
 - PHP 8.x
 - Symfony 6.x
 - MySQL 8.0
-- Doctrine ORM
 - Twig Template Engine
 
 ## Mimari Yapı
@@ -87,8 +86,8 @@
 3. **.env Dosyasını Yapılandırın**
    ```env
    DATABASE_URL="mysql://root:@127.0.0.1:3386/weg_search?serverVersion=8.0&charset=utf8mb4"
-   PROVIDER_JSON_URL="http://127.0.0.1:8000/mock/content.json"
-   PROVIDER_XML_URL="http://127.0.0.1:8000/mock/feed.xml"
+   PROVIDER_JSON_URL="https://raw.githubusercontent.com/WEG-Technology/mock/refs/heads/main/v2/provider1"
+   PROVIDER_XML_URL="https://raw.githubusercontent.com/WEG-Technology/mock/refs/heads/main/v2/provider2"
    ```
 
 4. **İçerikleri İçe Aktarın**
@@ -121,6 +120,3 @@ GET /api/search
 GET /api/search?q=php&type=video&sort=relevance&page=1&per_page=10
 ```
 
-## Lisans
-
-Bu proje MIT lisansı altında lisanslanmıştır.
