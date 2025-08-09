@@ -3,25 +3,72 @@
 {% block title %}Dashboard - WEG Search{% endblock %}
 
 {% block body %}
-    <h1>İçerikler (En İyi 50)</h1>
-    <table>
-        <thead>
-            <tr>
-                <th>Başlık</th>
-                <th>Tür</th>
-                <th>Skor</th>
-                <th>Yayın Tarihi</th>
-            </tr>
-        </thead>
-        <tbody>
-        {% for c in items %}
-            <tr>
-                <td>{{ c.title }}</td>
-                <td>{{ c.type.value }}</td>
-                <td>{{ c.finalScore|number_format(2) }}</td>
-                <td>{{ c.publishedAt|date('d.m.Y') }}</td>
-            </tr>
-        {% endfor %}
-        </tbody>
-    </table>
+    <div class="search-container">
+        <h1>İçerik Arama</h1>
+        <form id="searchForm" class="search-form">
+            <div class="form-group">
+                <input type="text" name="q" id="searchQuery" placeholder="Arama yapın..." class="search-input" value="{{ query|default('') }}">
+            </div>
+            <div class="form-group">
+                <select name="type" id="contentType" class="search-select">
+                    <option value="">Tüm İçerikler</option>
+                    <option value="video" {% if type == 'video' %}selected{% endif %}>Video</option>
+                    <option value="text" {% if type == 'text' %}selected{% endif %}>Metin</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <select name="sort" id="sortBy" class="search-select">
+                    <option value="popularity" {% if sort == 'popularity' %}selected{% endif %}>Popülerliğe Göre</option>
+                    <option value="relevance" {% if sort == 'relevance' %}selected{% endif %}>İlgililiğe Göre</option>
+                </select>
+            </div>
+            <button type="submit" class="search-button">Ara</button>
+        </form>
+    </div>
+
+    <div class="results-container">
+        <h2>İçerikler</h2>
+        <table id="resultsTable">
+            <thead>
+                <tr>
+                    <th>Başlık</th>
+                    <th>Tür</th>
+                    <th>Skor</th>
+                    <th>Yayın Tarihi</th>
+                    <th>Görüntülenme</th>
+                    <th>Beğeni</th>
+                    <th>Etkileşim</th>
+                </tr>
+            </thead>
+            <tbody>
+            {% for c in items %}
+                <tr>
+                    <td>{{ c.title }}</td>
+                    <td>{{ c.type.value }}</td>
+                    <td>{{ c.finalScore|number_format(2) }}</td>
+                    <td>{{ c.publishedAt|date('d.m.Y') }}</td>
+                    <td>{{ c.views|default('-') }}</td>
+                    <td>{{ c.likes|default('-') }}</td>
+                    <td>
+                        <div class="score-details">
+                            <small>Temel: {{ c.baseScore|number_format(2) }}</small>
+                            <small>Güncellik: {{ c.freshnessScore|number_format(2) }}</small>
+                            <small>Etkileşim: {{ c.interactionScore|number_format(2) }}</small>
+                        </div>
+                    </td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+
+        <div class="pagination">
+            {% if page > 1 %}
+                <a href="{{ path(app.request.attributes.get('_route'), app.request.query.all|merge({'page': page - 1})) }}" class="page-link">&laquo; Önceki</a>
+            {% endif %}
+            <span class="page-info">Sayfa {{ page }}</span>
+            {% if items|length >= 10 %}
+                <a href="{{ path(app.request.attributes.get('_route'), app.request.query.all|merge({'page': page + 1})) }}" class="page-link">Sonraki &raquo;</a>
+            {% endif %}
+        </div>
+    </div>
 {% endblock %}

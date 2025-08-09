@@ -1,0 +1,126 @@
+# WEG Search
+
+İçerik arama ve sıralama sistemi. Bu uygulama, farklı kaynaklardan gelen içerikleri toplar, puanlar ve aranabilir hale getirir.
+
+## Teknolojiler
+
+- PHP 8.x
+- Symfony 6.x
+- MySQL 8.0
+- Doctrine ORM
+- Twig Template Engine
+
+## Mimari Yapı
+
+### Domain Layer
+
+- **Entity**
+  - `ContentItem`: İçerik modelimiz
+  - Kullanılan alanlar: title, type, tags, views, likes, readingTime, reactions, duration vb.
+
+- **Enum**
+  - `ContentType`: İçerik tiplerini temsil eder (VIDEO, TEXT)
+
+### Service Layer
+
+- **Provider**
+  - `ProviderClientInterface`: İçerik sağlayıcıları için ortak arayüz
+  - `JsonProviderClient`: JSON formatında içerik sağlayan client
+  - `XmlProviderClient`: XML formatında içerik sağlayan client
+
+- **Service**
+  - `IngestionService`: İçeriklerin içeri aktarılması ve işlenmesi
+  - `ScoreCalculator`: İçerik puanlama algoritması
+
+### Infrastructure
+
+- **Rate Limiting**
+  - Symfony Rate Limiter kullanılarak provider istekleri sınırlandırılıyor
+  - Token bucket algoritması ile dakikada 60 istek sınırı
+
+- **Caching**
+  - Symfony Cache component kullanılarak arama sonuçları önbelleğe alınıyor
+  - Filesystem cache adapter kullanılıyor
+
+### Controller Layer
+
+- **Dashboard**
+  - Ana sayfa ve dashboard görünümü
+  - Arama, filtreleme ve sıralama özellikleri
+
+- **Search API**
+  - RESTful API endpoints
+  - İçerik arama ve filtreleme
+  - Sayfalama desteği
+
+## Puanlama Algoritması
+
+İçerikler üç temel faktöre göre puanlanır:
+
+1. **Temel Puan**
+   - İçerik türüne göre baz puan
+   - Etiket sayısı ve kalitesi
+
+2. **Güncellik Puanı**
+   - Yayın tarihine göre hesaplanır
+   - Zaman geçtikçe azalan bir değer
+
+3. **Etkileşim Puanı**
+   - Görüntülenme sayısı
+   - Beğeni sayısı
+   - Tepkiler
+   - Okuma süresi/Video süresi
+
+## Kurulum
+
+1. **Gereksinimleri Yükleyin**
+   ```bash
+   composer install
+   ```
+
+2. **Veritabanını Oluşturun**
+   ```bash
+   php bin/console doctrine:database:create
+   php bin/console doctrine:migrations:migrate
+   ```
+
+3. **.env Dosyasını Yapılandırın**
+   ```env
+   DATABASE_URL="mysql://root:@127.0.0.1:3386/weg_search?serverVersion=8.0&charset=utf8mb4"
+   PROVIDER_JSON_URL="http://127.0.0.1:8000/mock/content.json"
+   PROVIDER_XML_URL="http://127.0.0.1:8000/mock/feed.xml"
+   ```
+
+4. **İçerikleri İçe Aktarın**
+   ```bash
+   php bin/console app:ingest
+   ```
+
+5. **Web Sunucusunu Başlatın**
+   ```bash
+   php -S 127.0.0.1:8000 -t public/
+   ```
+
+## API Kullanımı
+
+### İçerik Arama
+
+```
+GET /api/search
+```
+
+**Parametreler:**
+- `q`: Arama sorgusu
+- `type`: İçerik türü (video|text)
+- `sort`: Sıralama (popularity|relevance)
+- `page`: Sayfa numarası
+- `per_page`: Sayfa başına sonuç sayısı
+
+**Örnek:**
+```
+GET /api/search?q=php&type=video&sort=relevance&page=1&per_page=10
+```
+
+## Lisans
+
+Bu proje MIT lisansı altında lisanslanmıştır.
