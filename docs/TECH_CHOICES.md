@@ -28,14 +28,6 @@ Bu dokümanda projede kullanılan temel teknolojilerin neden seçildiği ve sağ
 3. Güçlü indeksleme seçenekleri
 4. Tag-ContentItem ilişkileri için uygun yapı
 
-### Doctrine ORM
-
-**Seçim Gerekçeleri:**
-1. Entity-based domain modeling (Tag ve ContentItem ilişkileri için)
-2. Kolay migration yönetimi
-3. Repository pattern ile temiz veri erişimi
-4. ManyToMany ilişki desteği
-
 ## Performans Özellikleri
 
 ### Rate Limiting
