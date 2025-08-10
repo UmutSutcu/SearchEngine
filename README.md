@@ -2,6 +2,16 @@
 
 İçerik arama ve sıralama sistemi. Bu uygulama, farklı kaynaklardan gelen içerikleri toplar, puanlar ve aranabilir hale getirir.
 
+## Dashboard Görünümü
+
+<img width="1249" height="861" alt="image" src="https://github.com/user-attachments/assets/a8a487e3-f306-4474-abb9-51ed27fc8484" />
+
+Dashboard üzerinden:
+- İçerik araması yapabilirsiniz
+- Tag'lere göre filtreleme yapabilirsiniz
+- Popülerlik ve alakalılık skoruna göre sıralama yapabilirsiniz
+- Her içeriğin detaylı bilgilerini görebilirsiniz
+
 ## Teknolojiler
 
 - PHP 8.3.2
