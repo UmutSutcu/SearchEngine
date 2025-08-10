@@ -1,11 +1,11 @@
-# WEG Search
+# Search Engine
 
 İçerik arama ve sıralama sistemi. Bu uygulama, farklı kaynaklardan gelen içerikleri toplar, puanlar ve aranabilir hale getirir.
 
 ## Teknolojiler
 
-- PHP 8.x
-- Symfony 6.x
+- PHP 8.3.2
+- Symfony 7.3.2
 - MySQL 8.0
 - Twig Template Engine
 
@@ -103,6 +103,13 @@
    ```bash
    php -S 127.0.0.1:8000 -t public/
    ```
+
+## Dokümantasyon
+
+Detaylı bilgi için aşağıdaki dokümanlara bakınız:
+
+- [API Dokümantasyonu](docs/API.md) - Tüm API endpoint'leri ve kullanımları
+- [Teknoloji Tercihleri](docs/TECH_CHOICES.md) - Kullanılan teknolojilerin seçim gerekçeleri
 
 ## API Kullanımı
 
