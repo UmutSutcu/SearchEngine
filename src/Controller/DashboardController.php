@@ -35,7 +35,6 @@ final class DashboardController extends AbstractController
         }
 
         if ($sort === 'relevance' && $query) {
-            // For relevance sorting, we could implement more complex scoring here
             $qb->orderBy('c.finalScore * 
                 CASE 
                     WHEN LOWER(c.title) LIKE :titleQuery THEN 2 

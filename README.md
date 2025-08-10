@@ -15,7 +15,11 @@
 
 - **Entity**
   - `ContentItem`: İçerik modelimiz
-  - Kullanılan alanlar: title, type, tags, views, likes, readingTime, reactions, duration vb.
+    - Kullanılan alanlar: title, type, views, likes, readingTime, reactions, duration vb.
+    - ManyToMany ilişkisi ile Tag entitysine bağlı
+  - `Tag`: Etiket modelimiz
+    - Kullanılan alanlar: name (unique)
+    - ManyToMany ilişkisi ile ContentItem entitysine bağlı
 
 - **Enum**
   - `ContentType`: İçerik tiplerini temsil eder (VIDEO, TEXT)
@@ -58,7 +62,7 @@
 
 1. **Temel Puan**
    - İçerik türüne göre baz puan
-   - Etiket sayısı ve kalitesi
+   - İlişkilendirilmiş etiket sayısı ve kalitesi
 
 2. **Güncellik Puanı**
    - Yayın tarihine göre hesaplanır
@@ -114,6 +118,11 @@ GET /api/search
 - `sort`: Sıralama (popularity|relevance)
 - `page`: Sayfa numarası
 - `per_page`: Sayfa başına sonuç sayısı
+- `tag`: Etiket bazlı filtreleme (örn: tag:programming)
+
+**Özel Arama Sözdizimi:**
+- `tag:etiketadı` şeklinde etiket bazlı arama yapılabilir
+- Birden fazla etiket için `tag:etiket1 tag:etiket2` şeklinde kullanılabilir
 
 **Örnek:**
 ```
