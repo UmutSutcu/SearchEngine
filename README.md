@@ -89,7 +89,6 @@
 
 3. **.env Dosyasını Yapılandırın**
    ```env
-   DATABASE_URL="mysql://root:@127.0.0.1:3386/weg_search?serverVersion=8.0&charset=utf8mb4"
    PROVIDER_JSON_URL="https://raw.githubusercontent.com/WEG-Technology/mock/refs/heads/main/v2/provider1"
    PROVIDER_XML_URL="https://raw.githubusercontent.com/WEG-Technology/mock/refs/heads/main/v2/provider2"
    ```
